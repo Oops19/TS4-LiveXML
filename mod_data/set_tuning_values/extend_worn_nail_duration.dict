@@ -1,11 +1,11 @@
 {
 	'extend worn nail duration to 3 (1) days': {
 		'manager': 'BUFF',
-		'tuning': 'buff_Object_MassageChair_WornOutNails',  # 271649
+		'tunings': ['buff_Object_MassageChair_WornOutNails'],  # 271649
 		'items': ['_temporary_commodity_info.max_duration', ],
 		'process': [
-			'var = 4320',
-			'var = cwo: _temporary_commodity_info, max_duration, var',
+			'set: value = 4320',
+			'var = cwo: _temporary_commodity_info, max_duration, value',
 			'setattr: tuning, _temporary_commodity_info, var'
 		]
 	}

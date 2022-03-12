@@ -28,4 +28,9 @@ class ModInfo(CommonModInfo):
 
     @property
     def _version(self) -> str:
-        return '0.3'
+        return '0.5.0'
+# 0.5.0
+# In *.dict: 'tuning': 'foo' ==> 'tunings': ['foo', 'bar']
+# Deprecated 'var = value', only 'var = cwo: value, value, value' should be used. Use 'set:' instead.
+# New: 'set: var_name = value
+# New: 'getattr: a, b, c' which is executed as 'c = getattr(a, b) as'

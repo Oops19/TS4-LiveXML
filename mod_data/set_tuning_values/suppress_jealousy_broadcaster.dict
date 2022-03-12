@@ -1,11 +1,11 @@
 {
 	'Suppress Jealousy broadcaster': {
 		'manager': 'BROADCASTER',
-		'tuning': 'broadcaster_Jealousy*',  # random IDs
+		'tunings': ['broadcaster_Jealousy*'],  # random IDs
 		'items': ['allow_sims'],
 		'process': [
-			'var = False',
-			'setattr: tuning, allow_sims, var'
+			'set: value = False',
+			'setattr: tuning, allow_sims, value'
 		]
 	}
 }

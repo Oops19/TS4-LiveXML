@@ -3,11 +3,14 @@
 # © 2022 https://github.com/Oops19
 #
 import ast
+import importlib
 import os
+import re
 
 import services
 import sims4
 import sims4.commands
+
 
 from set_tuning_values.modinfo import ModInfo
 from sims4.resources import get_resource_key
@@ -21,7 +24,11 @@ log: CommonLog = CommonLogRegistry.get().register_log(f"{ModInfo.get_identity().
 log.enable()
 log.debug(f"Starting {ModInfo.get_identity().name} v{ModInfo.get_identity().version} ")
 
-
+def eee():
+    from event_testing.constraint_tests import SimsInConstraintTests
+    a = SimsInConstraintTests()
+    from sims.sim_info_types import Age
+    ages = frozenset({Age.TODDLER, Age.CHILD, Age.TEEN, Age.TEEN, Age.YOUNGADULT, Age.ADULT, Age.ELDER})
 
 class O19Tuner:
     config = {}
@@ -73,34 +80,42 @@ class O19Tuner:
             for description, data in config.items():
                 log.debug(f"Processing '{description}'")
                 _manager = data.get('manager')
-                _tuning = data.get('tuning')
+                _tunings = data.get('tunings')
                 _items = data.get('items')
                 _process = data.get('process')
 
                 instance_manager = services.get_instance_manager(sims4.resources.Types[_manager])
                 tuning_ids = set()
-                log.debug(f"{_tuning}")
-                if _tuning.startswith('*'):
-                    if _tuning.endswith('*'):
-                        _tuning = _tuning[1:-1]
+                tuning_names = dict()
+                log.debug(f"{_tunings}")
+                for _tuning in _tunings:
+                    if _tuning.startswith('*'):
+                        if _tuning.endswith('*'):
+                            _tuning = _tuning[1:-1]
+                            for (key, tuning_file) in instance_manager.types.items():
+                                if f"{tuning_file.__name__}" in _tuning:
+                                    tuning_ids.add(key.instance)
+                                    tuning_names.update({key.instance: f"{tuning_file.__name__}"})
+                        else:
+                            _tuning = _tuning[1:]
+                            for (key, tuning_file) in instance_manager.types.items():
+                                if f"{tuning_file.__name__}".endswith(_tuning):
+                                    tuning_ids.add(key.instance)
+                                    tuning_names.update({key.instance: f"{tuning_file.__name__}"})
+                    elif _tuning.endswith('*'):
+                        _tuning = _tuning[:-1]
                         for (key, tuning_file) in instance_manager.types.items():
-                            if f"{tuning_file.__name__}" in _tuning:
+                            if f"{tuning_file.__name__}".startswith(_tuning):
                                 tuning_ids.add(key.instance)
+                                tuning_names.update({key.instance: f"{tuning_file.__name__}"})
                     else:
-                        _tuning = _tuning[1:]
                         for (key, tuning_file) in instance_manager.types.items():
-                            if f"{tuning_file.__name__}".endswith(_tuning):
+                            if f"{tuning_file.__name__}" == _tuning:
                                 tuning_ids.add(key.instance)
-                elif _tuning.endswith('*'):
-                    _tuning = _tuning[:-1]
-                    for (key, tuning_file) in instance_manager.types.items():
-                        if f"{tuning_file.__name__}".startswith(_tuning):
-                            tuning_ids.add(key.instance)
-                else:
-                    for (key, tuning_file) in instance_manager.types.items():
-                        if f"{tuning_file.__name__}" == _tuning:
-                            tuning_ids.add(key.instance)
-                log.debug(f"Tunings: '{tuning_ids}'")
+                                tuning_names.update({key.instance: f"{tuning_file.__name__}"})
+                log.debug(f"Tunings: '{tuning_names}'")
+                tuning_names = None
+                # log.debug(f"Tunings: '{tuning_ids}'")
 
                 for tuning_id in tuning_ids:
                     log.debug(f"")
@@ -116,6 +131,7 @@ class O19Tuner:
                             try:
                                 _parent = getattr(_parent, i)
                                 items.update({i: _parent})
+                                log.debug(f'i: {type(_parent)} = {_parent}')
                             except:
                                 skip_tuning = True
                                 break
@@ -129,7 +145,7 @@ class O19Tuner:
                         continue
 
                     for p in _process:
-                        log.debug(f"\tProcessing command '{p}' ...")
+                        log.debug(f"\tProcessing command '{p}'")
                         # {'tuning': <class 'sims4.tuning.instances.buff_Object_MassageChair_WornOutNails'>,
                         # '_temporary_commodity_info': ImmutableSlots({'categories': frozenset(), 'max_duration': 1440, 'persists': True}),
                         #  'max_duration': 1440}
@@ -144,6 +160,51 @@ class O19Tuner:
                             # _temporary_commodity_info: <class 'sims4.collections.make_immutable_slots_class.<locals>.ImmutableSlots'> = ImmutableSlots({'categories': frozenset(), 'max_duration': 1440, 'persists': True})
                             # var: <class 'sims4.collections.make_immutable_slots_class.<locals>.ImmutableSlots'> = ImmutableSlots({'categories': frozenset(), 'max_duration': 4320, 'persists': True})
                             # setattr: <class 'sims4.tuning.instances.buff_Object_MassageChair_WornOutNails'> <class 'sims4.tuning.class.instances.HashedTunedInstanceMetaclass'>  ImmutableSlots({'categories': frozenset(), 'max_duration': 1440, 'persists': True}) <class 'sims4.collections.make_immutable_slots_class.<locals>.ImmutableSlots'>  ImmutableSlots({'categories': frozenset(), 'max_duration': 1440, 'persists': True}) <class 'sims4.collections.make_immutable_slots_class.<locals>.ImmutableSlots'>
+
+                        elif p.startswith('class:'):
+                            _item_class_name, _class_string = p.split(":")[1].split(',')
+                            _module_name, _class_name = _class_string.rsplit('.', 1)
+                            _class = getattr(importlib.import_module(_module_name), _class_name)
+                            items.update({_item_class_name: _class})
+                            log.debug(f"\t{_item_class_name}: {type(_class)} = {_class}")
+
+                        elif p.startswith('classlistitem:'):
+                            item = None
+                            _item_name, _list_name, _item_class_name = p.split(":")[1].split(',')
+                            list_items = items.get(_list_name)
+                            _class = items.get(_item_class_name)
+                            for item in list_items:
+                                if isinstance(item, _class):
+                                    items.update({_item_name: item})
+                                    break  # fixme, tuning may contain the same class multiple times
+                            log.debug(f"\tclasslistitem: item_name: {type(item)} = {item}")
+
+                        elif p.startswith('getattr:'):
+                            _obj, _name, _var = p.split(':')[1].split(',')
+                            _rv = getattr(items.get(_obj), _name)
+                            items.update({_var: _rv})
+                            log.debug(f"\tgetattr: {_var}: {type(_rv)} = {_rv}")
+
+                        elif p.startswith('set:'):
+                            var_name, var_value = p.split(':')[1].split('=')
+                            if var_value.capitalize() == 'True':
+                                var = True
+                            elif var_value.capitalize() == 'False':
+                                var = False
+                            elif var_value.capitalize() == 'None':
+                                var = None
+                            else:
+                                # Not a binary 'True/False/None' assignment
+                                # Check for isdecimal() to convert it to int().
+                                #   '½'.isnumeric() == True, this is a str() and not an int() assignment
+                                #   '²'.isdigit() == True, this is a str() and not an int() assignment
+                                if var_value.isdecimal() or var_value.lstrip('-').isdecimal():
+                                    var = int(var_value)
+                                else:
+                                    try:
+                                        var = float(var_value)
+                                    except ValueError:
+                                        var = str(var_value)  # String assignment
 
                         elif p.startswith('var'):
                             p = p.split("=")[1]
@@ -165,6 +226,8 @@ class O19Tuner:
                                         var = True
                                     elif p.capitalize() == 'False':
                                         var = False
+                                    elif p.capitalize() == 'None':
+                                        var = None
                                     else:
                                         try:
                                             var = float(p)
@@ -201,8 +264,7 @@ def debug_o19_hh_dump_all(_connection=None):
         log.enable()
         output(f"Processing is logged to 'mod_logs'.")
         global o19_tuner
-        if not o19_tuner:
-            o19_tuner = O19Tuner()
+        o19_tuner = O19Tuner()  # Read again all modified files
         o19_tuner.tune()
         log.disable()
         output(f"Done")

@@ -1,0 +1,66 @@
+{
+	'Disable is_outdoor test for tanning': {
+		'manager': 'INTERACTION',  # core/sims4/resources.py
+		'tunings': ['suntan_BeachTowel*', 'suntan_LoungeChair*', 'suntan_SitLoungeFloat*'], # 210704, ...
+		'items': ['test_globals'],
+		'process': [
+																	# tuning = get_tuning(210704, INTERACTION) ... via 'tuning': '...',
+																	# items[test_globals] = getattr(tuning, 'test_globals') .. via 'items': ['test_globals'],
+			'class: c, world.world_tests.LocationTest',				# items[c] = world.world_tests.LocationTest; 'c' is a class, not a string.
+			'classlistitem: test_global, test_globals, c',			# items[test_global] (1st param) is added if items[c] (3rd param) matches a class within
+																	# 	items[test_globals] (2nd param) which must be a list of classes. 
+			'getattr: test_global, location_tests, location_tests',	# items[location_tests] (3rd param) = getattr(items[test_global], 'location_tests')
+			'set: value = None',									# items[var] = None
+			'var = cwo: location_tests, is_outside, value',			# items[var] = items[location_tests].clone_with_overrides(is_outside, items[var])
+			'setattr: test_global, location_tests, var'				# setattr(items[test_global], 'location_tests', items[var])
+		]
+	}
+}
+# R ... The value of 'var' will be replaced. (Initially it will be added.)
+# N ... A new item will be added to 'items'. (In the rare case that it already exists it will be replaced.)
+# - ... No assignment takes place.
+# N getattr: obj, name, var_name	# items[var_name] = getattr(items[obj], name) - Keep the order right, var is the last parameter!
+# - setattr: obj, name, var_name	# setattr(items[obj], name, items[var_name])
+# N class: item_name, class_name	# items[item_name]: class = class(str(class_name))
+# N classlistitem: c, class_list, class_name	# items[c] = class_list[n] if isinstance(class_list[n], class_name)
+# N TODO add: set: var_name, value	# items[var_name] = value - Supported "types" are 'bool/str/int/float/None', e.g. 'True', 'False', 'None', '0.11', '5', 'foo', ...
+# R var = value  # items['var'] = value - Supported "types" are 'bool/str/int/float/None', e.g. 'True', 'False', 'None', '0.11', '5', 'foo', ... ## deprecated ##
+
+# 'var = cwo: _temporary_commodity_info, max_duration, var',
+# 'setattr: tuning, _temporary_commodity_info, var',
+
+# tuning = get_tuning(210704, output)  # suntan_SitLoungeFloat
+# test_globals = getattr(tuning, 'test_globals')
+# for test_global in test_globals:
+# 	output(f'-- {test_global}: {type(test_global)} --')
+# 	if isinstance(test_global, world.world_tests.LocationTest):
+# 		output('##################################')
+# 		location_tests = getattr(test_global, 'location_tests')
+# 		output(f' - {location_tests}')
+# 		test_global.location_tests = location_tests.clone_with_overrides(is_outside=None)
+#       var = location_tests.clone_with_overrides(is_outside=None)
+#       gstattr(test_global, 'location_tests', var)
+
+
+
+# OLD DATA
+# Name: 'Suppress Jealousy broadcaster'
+# Description: -
+# 1. Read the 'BROADCASTER' tuning starting with 'broadcaster_Outfit_Nude'.
+#	If more than one tuning was found all tunings will be processed one after the other.
+#	Tunings may contain wildcards: 'starting_with_*', '*_containing_*', '*_end_with'
+# 2. Read the property '{tuning}.allow_sims'
+#	We need to read these properties so we can set them later. Without a reference to them we can not set them.
+# 3. Set var = False.
+#	'var' is the only supported variable to store data. It can be bool, integer, float, string or an object.
+# 4. '{tuning}.allow_sims' = var (= False)
+#	Obviously the value of var will be used.
+
+# Tuning:
+# <?xml version="1.0" encoding="utf-8"?>
+# <I c="Broadcaster" i="broadcaster" m="broadcasters.broadcaster" n="broadcaster_Outfit_Nude" s="128809">
+
+# INSTANCE_TUNABLES
+# 'allow_sims': Tunable(description='If checked then this broadcaster will consider Sims. This is on by default. If neither allow_objects or allow_sims is checked that will result in a tuning error.', tunable_type=bool, default=True)
+
+# This could log the error 'Broadcaster {tuning} is tuned to not allow any objects as targets.' if vanilla logging is enabled.

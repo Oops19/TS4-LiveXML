@@ -8,10 +8,18 @@ The ZIP file should be extracted into the `The Sims 4` folder to make sure that 
 * The mod `set_tuning_values.ts4cript` itself should be stored in `Mods` or in a sub folder. I highly recommend to store it in `_o19_` so you know who created it.
 
 Unless not yet installed: Install [S4CL](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/latest) as this mod is required.
-* I highly recommend to install the S4CL files into `_cn_` so you know who created it.
+* I highly recommend to install the S4CL files into `_cn_` so you know who contributed this mod.
 
 This mod has been tested with 1.84.171 (2022-02-15) and S4CL v1.75 (2021-09-28).
 It is expected to work with many older and upcoming releases of TS4 and S4CL.
+
+## Warning - Game mechanics changed
+The `mod_data/*.dict` files modify tunings to change the game mechanics and checks in various ways.
+* Please review the files in `mod_data` and remove files which you do not want to use.
+* Filtering of broadcasts affects multiple sims.
+* Modified age/race/gender checks may allow sims to execute tasks which were never planned to be available for them.
+
+The included files should not affect the game-play too much but it's hard to test everything.
 
 ## Merging
 Most people do not merge script mods. This mod may be merged with a ZIP program with other mods. The file name may be renamed, it is not used to reference anything.
@@ -29,6 +37,8 @@ Some documented examples can be found in 'mod_data'.
 
 ## Future
 It is possible to exploit the `Snippet Tuning` XML format to add there JSON data (or within XML tags) so a mod creator can still deliver a .package file instead of a file to be stored in `mod_data`.
+
+Allow 'for_each' loops to process multiple elements and 'if_is_instance' to process only matching classes or elements.
 
 Then it would be more like the XML Injector.
 
