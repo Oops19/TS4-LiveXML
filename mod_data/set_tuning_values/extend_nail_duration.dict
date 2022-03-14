@@ -4,11 +4,11 @@
 		'tunings': ['buff_Object_MassageChair_Manicure_Nail_*'],  # all tunings in range 271251..272825
 		'items': ['_temporary_commodity_info.max_duration', 'commodity.max_value', 'commodity.max_value_tuning', 'commodity.initial_value', ],
 		'process': [
-			'set: value = 10080',
+			'assign: value = 10080',
 			'setattr: commodity, max_value, value',
 			'setattr: commodity, max_value_tuning, value',
 			'setattr: commodity, initial_value, value',
-			'var = cwo: _temporary_commodity_info, max_duration, var',
+			'cwo: var = _temporary_commodity_info, max_duration, var',
 			'setattr: tuning, _temporary_commodity_info, var',
 		]
 	}

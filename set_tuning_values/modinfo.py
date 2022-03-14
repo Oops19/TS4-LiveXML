@@ -28,8 +28,11 @@ class ModInfo(CommonModInfo):
 
     @property
     def _version(self) -> str:
-        return '0.5.1'
-# 0.7.0
+        return '0.5.2'
+# 0.5.2
+# A few changes and new commands, not compatible with 0.5.1
+
+# 0.5.1
 # A few changes and new commands, not compatible with 0.5.0
 # getattr: var = obj, key
 # cwo: var = obj, key, new-value

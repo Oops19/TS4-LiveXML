@@ -4,7 +4,7 @@
 		'tunings': ['broadcaster_Jealousy*'],  # random IDs
 		'items': ['allow_sims'],
 		'process': [
-			'set: value = False',
+			'assign: value = False',
 			'setattr: tuning, allow_sims, value'
 		]
 	}

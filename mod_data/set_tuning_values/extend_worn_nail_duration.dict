@@ -4,8 +4,8 @@
 		'tunings': ['buff_Object_MassageChair_WornOutNails'],  # 271649
 		'items': ['_temporary_commodity_info.max_duration', ],
 		'process': [
-			'set: value = 4320',
-			'var = cwo: _temporary_commodity_info, max_duration, value',
+			'assign: value = 4320',
+			'cwo: var = _temporary_commodity_info, max_duration, value',
 			'setattr: tuning, _temporary_commodity_info, var'
 		]
 	}

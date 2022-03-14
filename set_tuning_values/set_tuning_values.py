@@ -81,6 +81,7 @@ class O19Tuner:
         :param script: The script to be executed
         :return:
         '''
+        _script = dict()
         O19Tuner.pc = 0
         O19Tuner.lvl = 0
         _pc = 0
@@ -93,11 +94,12 @@ class O19Tuner:
             if lvl_array[-1].startswith(' '):
                 log.error(f"ERROR: Command '{cmd}' contains wrong number of leading SPACE characters (0, 4, 8, 12, ... required).", throw=False)
                 return
-            O19Tuner.script.update({_pc: f"{lvl:1d} {cmd.strip()}"})
+            _script.update({_pc: f"{lvl:1d} {cmd.strip()}"})
             _pc += 1
-        if not O19Tuner.script.get(1).startswith('1 '):
+        if not _script.get(1).startswith('1 '):
             log.error(f"ERROR: First command must not be intended.", throw=False)
             return
+        O19Tuner.script = _script
         log.debug(f"Script: '{O19Tuner.script}'.")
 
     @staticmethod
@@ -222,7 +224,7 @@ class O19Tuner:
             O19Tuner.items.update({_var: _rv})
             log.debug(f"{log_prefix}(getattr) {_var}: {type(_rv)} = {_rv}")
 
-        elif cmd.startswith('set:'):  # 'set: var* = value'
+        elif cmd.startswith('assign:'):  # 'assign: var* = value'
             _var, _value = cmd.split(":", 1)[1].split('=', 1)
             _value = self.parse_value(_value)
             O19Tuner.items.update({_var: _value})
@@ -234,6 +236,20 @@ class O19Tuner:
             _class = getattr(importlib.import_module(_module_name), _class_name)
             O19Tuner.items.update({_item_class_name: _class})
             log.debug(f"{log_prefix}(class) {_item_class_name}: {type(_class)} = {_class}")
+
+        elif cmd.startswith('set:') or cmd.startswith('frozenset:'):  # 'set: var* = a, b, c, ...' or 'frozenset: ...'
+            _var, __values = cmd.split(":", 1)[1].split('=', 1)
+            _values = __values.split(',')
+            _set = set()
+            for _value in _values:
+                _value = self.parse_value(_value)
+                _set.add(_value)
+
+            if cmd.startswith('frozenset:'):
+                _set = frozenset(_set)
+
+            O19Tuner.items.update({_var: _set})
+            log.debug(f"{log_prefix}(class) {_var}: {type(_set)} = {_set}")
 
         elif cmd.startswith('cwo:'):  # 'cwo: var* = obj*, key, new-value*'
             _var, _obj__key__new_value = cmd.split(":", 1)[1].split('=', 1)
@@ -262,20 +278,14 @@ class O19Tuner:
                         O19Tuner.pc = this_pc
                         break
 
-                pass
-                # go one level deeper and process it
-
         elif cmd.startswith('foreach:'):  # 'foreach: var*, _vars*'
             _var, _vars = cmd.split(":", 1)[1].split(',', 1)
             this_lvl = O19Tuner.lvl
             this_pc = O19Tuner.pc
             next_lvl = this_lvl + 1
             next_pc = this_pc + 1
-            log.debug(f" ---- {O19Tuner.items.get(_vars)}")
             for __var in O19Tuner.items.get(_vars):
-                log.debug(f" ---- ---- {__var}")
                 O19Tuner.items.update({_var: __var})
-                log.debug(f" ---- ---- {next_pc} ---- {len(O19Tuner.script)}")
                 for _pc in range(next_pc, len(O19Tuner.script)):
                     lvl, cmd = O19Tuner.script.get(_pc).split(' ', 1)
                     lvl = int(lvl)

@@ -4,7 +4,7 @@
 		'tunings': ['Commodity_Trait_TheKnack_UpgradeTimer'],  # 99841
 		'items': ['max_value_tuning', 'maximum_auto_satisfy_time'],
 		'process': [
-			'set: value = 0',
+			'assign: value = 0',
 			'setattr: tuning, max_value_tuning, value',
 			'setattr: tuning, maximum_auto_satisfy_time, value'
 		]
