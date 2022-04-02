@@ -1,0 +1,11 @@
+{
+	'No autonomous  Jungle Adventures Rumbasim': {
+		'manager': 'INTERACTION',  # core/sims4/resources.py i="interaction"
+		'tunings': ['stereo_Dance_LocalCultureSkill', ], # s="175415" disable only the Jungle Adventures Rumba
+		'process': [
+														# items[tuning] = get_tuning(129094, INTERACTION)
+			'assign: value = False',					# items[value] = False
+			'setattr: tuning, allow_autonomous, value'	# setattr(items[tuning], 'allow_autonomous', items[value])
+		]
+	}
+}
