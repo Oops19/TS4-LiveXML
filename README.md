@@ -7,11 +7,12 @@ They often break when EA releases a new TS4 version.
 
 As a normal user you want to install this mod if another mod requires it.
 The mod itself does not modify the game play at all.
-Of course you can install it and benefit (or suffer) from the game changes caused by the included sample configuration files if you fail to remove them.
+Of course, you can install it and benefit (or suffer) from the game changes caused by the included sample configuration files if you fail to remove them.
 
 This mod requires S4CL which can be downloaded from https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/latest
 
-The mod for modders to create config files for this mod can be found below in `Creating custom settings`.
+A command to help creating config files is now included.
+~~The mod for modders to create config files for this mod can be found below in `Creating custom settings`.~~
 
 ## Real world example
 How would we implement the simple requirement to disable autonomy for one interaction?
@@ -110,6 +111,8 @@ Unless not yet installed: Install [S4CL](https://github.com/ColonolNutty/Sims4Co
 This mod has been tested with  1.86.157 (2022-03-31) and S4CL v1.76 (2022-02-14).
 It is expected to work with many older and upcoming releases of TS4 and S4CL.
 
+## Mod collision
+This mod uses the cheat command 'inspect' and collides with similar mods like 'inspector.py' by scumbumbo.
 
 ## Merging
 Most people do not merge script mods. This mod may be merged with a ZIP program with other mods. The file name may be renamed, it is not used to reference anything.
@@ -122,9 +125,11 @@ For simple and common properties a pie menu interaction may be added to all obje
 
 
 ## Creating custom settings
-The  [inspector](https://modthesims.info/showthread.php?t=575118) by [scumbumbo](https://modthesims.info/m/7401825) is probably the best tool ever written for TS4 to avoid that mods break with every update.
+The  [inspector](https://modthesims.info/showthread.php?t=575118) by [scumbumbo](https://modthesims.info/m/7401825) is probably the 2nd best tool ever written for TS4 to avoid that mods break with every update.
 Many mod creators know about it but only a few use it. They create bogus mods on purpose which break with every update even though they could avoid it.
- 
+
+The best tool is very likely the embeeded inspector which will also be called with 'inspect'. If you have scumbumbo's inspector installed remove it.
+
 To modify a tuning it may be best to inspect it with the inspector and to take note about the needed parameter names and values.
 Locating them may require some work and one will get used to it. One may also need to modify the inspector.py file to dig deeper into the structures.
 
@@ -163,21 +168,29 @@ Within `process` the business logic is added.
 * The `getattr:` command could also be used.
 
 * `assign: var* = value` - Value 'value' may be 'None', 'True', 'False', an integer or a float number or a string. It will be assigned to 'var*'. 'value' is a string and does not reference to a variable.
+* For `frozenset, set, tuple` `'**var**'` may be specified. In this case the value of 'var*' will be assigned. Very useful to assign a class/tuning to a tuple.
 * `getattr: var* = obj*, prop` - The 'prop' property of 'obj*' will be assigned to 'var*'. 'prop' is a string and does not reference to a variable.
 * `setattr: obj*, prop, value*` - Sets the property 'prop' of the 'obj*' to 'value*'. 'prop' is a string while 'value*' references a variable which has been assigned before.
 * `class: var* = string` - Assign the class 'string' to 'var*'. This is not a string assignment, the class must exist.
-* `set: var* = value, value2, ...` - Create a set() with 1-n elements. See 'assign:' for possible values.
+* `classstr: var* = string` - Assign the 'string' to 'var*'. This is a string assignment and should only be used if the class can't be loaded (eg for Wrapper classes).
 * `frozenset: var* = value, value2, ...` - Create a frozenset() with 1-n elements. See 'assign:' for possible values.
+* `set: var* = value, value2, ...` - Create a set() with 1-n elements. See 'assign:' for possible values.
+* `tuple: var* = value, value2, ...` - Create a tuple() with 1-n elements. See 'assign:' for possible values.
 * `cwo: var* = obj*, key, value*` - Clone object 'obj*' with 'ImmutableSlots' 'key' to new 'value*' and store it in 'var*'
 
+Simple mathematical functions. Hopefully `sin/cos/tan/sqrt/pow()` are not needed.
+* `mul: var* = var1*, var2*` - Assign 'var1*' * 'var2*' to 'var*'. 
+* `div: var* = var1*, var2*` - Assign 'var1*' / 'var2*' to 'var*'.
+* `add: var* = var1*, var2*` - Assign 'var1*' + 'var2*' to 'var*'.
+* `sub: var* = var1*, var2*` - Assign 'var1*' - 'var2*' to 'var*'.
+
+Loops, Ifs, etc. allow creating more complex configurations. 
+* `if: var*` - Checks whether 'var*' is set.
+* `ifnot: var*` - Checks whether 'var*' is not set.
+* `isinstance: var*, class*` - Checks whether 'var*' is an instance of 'class*'.
+* `isinstancestr: var*, class*` - Checks whether 'type(var*)' is an instance of 'class*'.
 * `foreach: var*, vars*` - Loop over all elements in 'vars*' and assign them to 'var*'
 
 All following command have to be intended with 1 TAB or 4 SPACE characters.
-Loops and checks can be nested, the next level has to be intended with another TAB or 4 SPACE characters.
-There is no 'break' or 'continue' available, as soon as the intend is removed the loop ends.
-
-* `isinstance: var*, class*` - Checks whether 'var*' is an instance of 'class*'.
-
-All following command have to be intended with 1 TAB or 4 SPACE characters.
 Checks and loops can be nested, the next level has to be intended with another TAB or 4 SPACE characters.
-There is no else available, as soon as the intend is removed the 'if' part ends.
+There is no else available, as soon as the intent is removed the 'if' part ends.
