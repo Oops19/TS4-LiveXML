@@ -28,28 +28,33 @@ class ModInfo(CommonModInfo):
 
     @property
     def _version(self) -> str:
-        return '0.6.0'
+        return '0.7.0'
 
 """
-0.6.0
-Rebranding as 'Live XML (Tuning Editor)', not compatible with 0.5.2
+0.8.0 Hopefully all 0.7.x issues have been fixed
 
-0.5.2
-A few changes and new commands, not compatible with 0.5.1
-set: Defines a set()
-frozenset: Defines a frozenset()
-assign: Assigns a value to a variable
+0.7.0 Adding 'inspect' to drill down into tunings
+        New commands like 'if', 'ifnot' and 'isinstancestr' for classes which can not be loaded
+        Mathematical functions 'add', 'sub', 'mul' and 'div'
+        tuple: Defines a tuple()
+        **var** allows to access *var for frozenset, set and tuple.
 
-0.5.1
-A few changes and new commands, not compatible with 0.5.0
-getattr: var = obj, key
-cwo: var = obj, key, new-value
-isinstance: obj, class
-foreach: var, list
+0.6.0 Rebranding as 'Live XML (Tuning Editor)', not compatible with 0.5.2
 
-0.5.0
-In *.dict: 'tuning': 'foo' ==> 'tunings': ['foo', 'bar']
-Deprecated 'var = value', only 'var = cwo: value, value, value' should be used. Use 'set:' instead.
-New: 'set: var_name = value
-New: 'getattr: a, b, c' which is executed as 'c = getattr(a, b) as'
+0.5.2 A few changes and new commands, not compatible with 0.5.1
+        set: Defines a set()
+        frozenset: Defines a frozenset()
+        assign: Assigns a value to a variable
+        
+0.5.1 A few changes and new commands, not compatible with 0.5.0
+        getattr: var = obj, key
+        cwo: var = obj, key, new-value
+        isinstance: obj, class
+        foreach: var, list
+
+0.5.0 Many changes to support more tunings
+        In *.dict: 'tuning': 'foo' ==> 'tuning_names': ['foo', 'bar']
+        Deprecated 'var = value', only 'var = cwo: value, value, value' should be used. Use 'set:' instead.
+        New: 'set: var_name = value
+        New: 'getattr: a, b, c' which is executed as 'c = getattr(a, b) as'
 """
