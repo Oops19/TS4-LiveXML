@@ -139,7 +139,8 @@ Some documented examples can be found in 'mod_data'.
 Everything which must be replaced has been put into round brackets `(...)`. The brackets and everything in between must be replaced.
 
 ##### Structure:
-`{
+```python
+{
 	'(custom unique name)': {
 		'manager': '(needed manager, ususally in upper case)',  # core/sims4/resources.py or in tuning i="..."
 		'tunings': ['(a tuning name, leading and ending wildcards * are supported)', '(another tuning name)'],  # you may add the tuning IDs as comment here
@@ -151,8 +152,8 @@ Everything which must be replaced has been put into round brackets `(...)`. The 
 		    '    (inner loop command OR process if==True)', # use 4 spaces or TAB for the commands within the loop.
 		]
 	}
-}`
-
+}
+```
 
 ### Commands
 All strings which end with `*` are added to a local data store. So `var*` is not the same as `var`. Don't get confused.
