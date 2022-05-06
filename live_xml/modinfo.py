@@ -28,9 +28,11 @@ class ModInfo(CommonModInfo):
 
     @property
     def _version(self) -> str:
-        return '0.7.0'
+        return '0.8.2'
 
 """
+0.8.2 Identify the first line of the script properly
+0.8.1 if attributes in `'items': [..., ],` are not in the tuning they will be set to None instead of skipping the tuning.
 0.8.0 Hopefully all 0.7.x issues have been fixed
 
 0.7.0 Adding 'inspect' to drill down into tunings

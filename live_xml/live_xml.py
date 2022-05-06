@@ -106,7 +106,7 @@ class O19Tuner:
                 return
             _script.update({_pc: f"{lvl:1d} {cmd.strip()}"})
             _pc += 1
-        if not _script.get(1).startswith('1 '):
+        if not _script.get(0).startswith('1 '):
             log.error(f"ERROR: First command must not be intended.", throw=False)
             return
         O19Tuner.script = _script
@@ -128,6 +128,9 @@ class O19Tuner:
                 _items = data.get('items')
                 _process = data.get('process')
                 self.convert_process_to_script(_process)
+
+                log.debug(f"m={_manager}\ni={_items}\np={_process}\ns={self.script}")
+
                 self.process_tunings(tuning_dict, _items)
         except Exception as e:
             log.error(f"{e}")
@@ -144,16 +147,19 @@ class O19Tuner:
                 _parent = tuning
                 for i in _item.split('.'):
                     try:
-                        _parent = getattr(_parent, i)
+                        _parent = getattr(_parent, i, None)
                         items.update({i: _parent})
-                        log.debug(f'i: {type(_parent)} = {_parent}')
+                        if _parent is None:
+                            log.warn(f'i: {type(_parent)} = {_parent}')
+                        else:
+                            log.debug(f'i: {type(_parent)} = {_parent}')
                     except:
                         skip_tuning = True
                         break
                 if skip_tuning:
                     break
             if skip_tuning:
-                log.warn(f"\tItem '{i}' not found, skipping tuning.")
+                log.warn(f"\tError processing tuning, skipping tuning.")
                 return None
         log.debug(f"\tItems '{items}'")
         return items

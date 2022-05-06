@@ -214,11 +214,17 @@ class O19TuningInspector:
     def o19_inspect_object(obj):
         found_something = False
         O19TuningInspector.inspector_log(f"    ** members **")
-        for k, v in inspect.getmembers(obj):
-            if not k.startswith('__'):
-                found_something = True
-                O19TuningInspector.inspector_log(f'        {k}: {type(k)} = {v}: {type(v)}')
+        try:
+            for k, v in inspect.getmembers(obj):
+                if not k.startswith('__'):
+                    found_something = True
+                    O19TuningInspector.inspector_log(f'        {k}: {type(k)} = {v}: {type(v)}')
+        except Exception as e:
+            O19TuningInspector.inspector_log(f"Error: {e}", True)
         if not found_something:
             O19TuningInspector.inspector_log(f"    ** objects **")
-            for e in obj:
-                O19TuningInspector.inspector_log(f'        {e}: {type(e)}')
+            try:
+                for e in obj:
+                    O19TuningInspector.inspector_log(f'        {e}: {type(e)}')
+            except Exception as e:
+                O19TuningInspector.inspector_log(f"Error: {e}", True)
