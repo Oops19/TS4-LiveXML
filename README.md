@@ -180,16 +180,24 @@ Within `process` the business logic is added.
 * `cwo: var* = obj*, key, value*` - Clone object 'obj*' with 'ImmutableSlots' 'key' to new 'value*' and store it in 'var*'
 
 Simple mathematical functions. Hopefully `sin/cos/tan/sqrt/pow()` are not needed.
-* `mul: var* = var1*, var2*` - Assign 'var1*' * 'var2*' to 'var*'. 
+* `mul: var* = var1*, var2*` - Assign 'var1*' * 'var2*' to 'var*'.
 * `div: var* = var1*, var2*` - Assign 'var1*' / 'var2*' to 'var*'.
 * `add: var* = var1*, var2*` - Assign 'var1*' + 'var2*' to 'var*'.
 * `sub: var* = var1*, var2*` - Assign 'var1*' - 'var2*' to 'var*'.
+
+TODO
+Replacement functions
+* `add: var*, value, value2, ...` - Append 'value', 'value2', ... to '*var'. 
+* `del: var*, value, value2, ...` - Remove 'value', 'value2', ... from '*var'.
+* `sub: var*, value1, value2` - Substitute 'value1' with 'value2' in '*var'.
+For all three commands `'**var**'` may be specified. In this case the value of 'var*' will be used.
 
 Loops, Ifs, etc. allow creating more complex configurations. 
 * `if: var*` - Checks whether 'var*' is set.
 * `ifnot: var*` - Checks whether 'var*' is not set.
 * `isinstance: var*, class*` - Checks whether 'var*' is an instance of 'class*'.
-* `isinstancestr: var*, class*` - Checks whether 'type(var*)' is an instance of 'class*'.
+* `isinstancestr: var*, classstr*` - Checks whether 'type(var*)' is the same as 'classstr*'.
+* `isinstancetypestr: var*, class*` - Checks whether 'var*: type(var*)' is the same as 'classstr*'.
 * `foreach: var*, vars*` - Loop over all elements in 'vars*' and assign them to 'var*'
 
 All following command have to be intended with 1 TAB or 4 SPACE characters.
