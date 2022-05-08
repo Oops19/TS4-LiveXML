@@ -1,0 +1,30 @@
+{
+	'Immediate instant upgrade': {
+		'manager': 'STATISTIC',
+		'tunings': ['Commodity_Trait_TheKnack_UpgradeTimer'],  # 99841
+		'items': ['max_value_tuning', 'maximum_auto_satisfy_time'],
+		'process': [
+			'assign: value = 0',
+			'setattr: tuning, max_value_tuning, value',
+			'setattr: tuning, maximum_auto_satisfy_time, value'
+		]
+	}
+}
+# Name: 'Immediate instant upgrade'
+# Description: We set timers to zero to allow to intant upgrade everything without delay.
+# 1. Read the 'STATISTIC tuning' 'Commodity_Trait_TheKnack_UpgradeTimer'
+#	If more than one tuning was found all tunings will be processed one after the other.
+#	Tunings may contain wildcards: 'starting_with_*', '*_containing_*', '*_end_with'
+# 2. Read the properties Commodity_Trait_TheKnack_UpgradeTimer.max_value_tuning and Commodity_Trait_TheKnack_UpgradeTimer.maximum_auto_satisfy_time
+#	We need to read these properties so we can set them later. Without a reference to them we can not set them.
+# 3. Set var = 0.
+#	'var' is the only supported variable to store data. It can be bool, integer, float, string or an object.
+# 4. Commodity_Trait_TheKnack_UpgradeTimer.max_value_tuning = var (= 0)
+#	Obviously the value of var will be used.
+# 5. Commodity_Trait_TheKnack_UpgradeTimer.maximum_auto_satisfy_time = var (= 0)
+
+# Tuning:
+# <?xml version="1.0" encoding="utf-8"?>
+# <I c="Commodity" i="statistic" m="statistics.commodity" n="Commodity_Trait_TheKnack_UpgradeTimer" s="99841">
+#   <T n="max_value_tuning">1440</T>
+#   <T n="maximum_auto_satisfy_time">1440</T>

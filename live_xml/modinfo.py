@@ -28,9 +28,11 @@ class ModInfo(CommonModInfo):
 
     @property
     def _version(self) -> str:
-        return '0.8.2'
+        return '0.8.4'
 
 """
+0.8.4 New 'isinstancetypestr:' command to check for 'value: type' as 'value' is not always enough.
+0.8.3 Catch a fatal 'None' exception caused by errors in .dict files.
 0.8.2 Identify the first line of the script properly
 0.8.1 if attributes in `'items': [..., ],` are not in the tuning they will be set to None instead of skipping the tuning.
 0.8.0 Hopefully all 0.7.x issues have been fixed

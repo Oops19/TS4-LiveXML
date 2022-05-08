@@ -1,0 +1,33 @@
+{
+	'extend worn nail duration to 3 (1) days': {
+		'manager': 'BUFF',
+		'tunings': ['buff_Object_MassageChair_WornOutNails'],  # 271649
+		'items': ['_temporary_commodity_info.max_duration', ],
+		'process': [
+			'assign: value = 4320',
+			'cwo: var = _temporary_commodity_info, max_duration, value',
+			'setattr: tuning, _temporary_commodity_info, var'
+		]
+	}
+}
+
+# Name: 'extend worn nail duration to 3 (1) days'
+# Description: -
+# 1. Read the 'BUFF' tuning 'buff_Object_MassageChair_WornOutNails'
+#	If more than one tuning was found all tunings will be processed one after the other.
+#	Tunings may contain wildcards: 'starting_with_*', '*_containing_*', '*_end_with'
+# 2. Read the properties 'buff_Object_MassageChair_WornOutNails._temporary_commodity_info' and 'buff_Object_MassageChair_WornOutNails._temporary_commodity_info.max_duration'
+#	We need to read these properties so we can set them later. Without a reference to them we can not set them.
+# 3. Set var = 4320. (4320/1440 = 3 days)
+#	'var' is the only supported variable to store data. It can be bool, integer, float, string or an object.
+# 4. '_temporary_commodity_info' is a 'frozenset'. To change a value we use the TS4 'function clone_with_overrides' to clone it. The new value for 'max_duration' is var (=4320). The result is assigned to 'var'.
+# 5. Replace '_temporary_commodity_info' with 'var' which is now a new 'frozenset' with 'max_duration' replaced.
+
+# Tuning:
+# <?xml version="1.0" encoding="utf-8"?>
+# <I c="Buff" i="buff" m="buffs.buff" n="buff_Object_MassageChair_WornOutNails" s="271649">
+#  <V n="_temporary_commodity_info" t="enabled">
+#    <U n="enabled">
+#      <T n="max_duration">1440</T>
+
+# One could of course create an override and replace 1440 with 4320 to make sure that the mod containing the override breaks with one of the next updates.

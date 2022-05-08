@@ -335,10 +335,44 @@ class O19Tuner:
                         O19Tuner.pc = this_pc
                         break
 
+        elif cmd.startswith('isinstancetypestr:'):  # 'isinstancetypestr: var*, class_type_str*'
+            # for classes which can not be loaded
+            _var, class_type_str = cmd.split(":", 1)[1].split(',', 1)
+            __var = O19Tuner.items.get(_var)
+            __class_type_str = O19Tuner.items.get(class_type_str)
+            if __var is None or __class_type_str is None:
+                log.warn(f"var={__var} andd classstr={__class_type_str} - test fails!")
+                return
+            _type_var = type(__var)
+            if f"{__var}: {_type_var}".replace(' ', '') == __class_type_str.replace(' ', ''):
+                this_lvl = O19Tuner.lvl
+                this_pc = O19Tuner.pc
+                next_lvl = this_lvl + 1
+                next_pc = this_pc + 1
+                for _pc in range(next_pc, len(O19Tuner.script)):
+                    lvl, cmd = O19Tuner.script.get(_pc).split(' ', 1)
+                    lvl = int(lvl)
+                    if lvl == next_lvl:
+                        O19Tuner.lvl = lvl
+                        O19Tuner.pc = _pc
+                        self.process_command(cmd)
+                    if lvl == this_lvl:
+                        log.debug("End of if")
+                        O19Tuner.lvl = this_lvl
+                        O19Tuner.pc = this_pc
+                        break
+
+
         elif cmd.startswith('isinstancestr:'):  # 'isinstancestr: var*, classstr*'
             # for classes which can not be loaded
             _var, _classstr = cmd.split(":", 1)[1].split(',', 1)
-            if f"{type(O19Tuner.items.get(_var))}".replace(' ', '') == O19Tuner.items.get(_classstr).replace(' ', ''):
+            __var = O19Tuner.items.get(_var)
+            _type_var = type(__var)
+            __classstr = O19Tuner.items.get(_classstr)
+            if _type_var is None or __classstr is None:
+                log.warn(f"var={__var}: {_type_var} and classstr={__classstr} - test fails!")
+                return
+            if f"{_type_var}".replace(' ', '') == O19Tuner.items.get(_classstr).replace(' ', ''):
                 this_lvl = O19Tuner.lvl
                 this_pc = O19Tuner.pc
                 next_lvl = this_lvl + 1
