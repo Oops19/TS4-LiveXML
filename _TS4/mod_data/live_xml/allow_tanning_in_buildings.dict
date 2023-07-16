@@ -1,0 +1,19 @@
+{
+	'Disable is_outdoor test for tanning': {
+		'manager': 'INTERACTION',  # core/sims4/resources.py  i="interaction"
+		'tunings': ['suntan_BeachTowel*', 'suntan_LoungeChair*', 'suntan_SitLoungeFloat*'], # 210704, ...
+		'items': ['test_globals'],
+		'process': [
+																	# tuning = get_tuning(210704, INTERACTION) ... via 'tuning': '...',
+																	# items[test_globals] = getattr(tuning, 'test_globals') .. via 'items': ['test_globals'],
+			'class: c = world.world_tests.LocationTest',			# items[c]: class = class(world.world_tests.LocationTest); 'c' is a class, not a string.
+			'assign: none = None',									# items[none]: None = None
+			'foreach: test_global, test_globals',					# items[test_global] is set for each list entry in items[test_globals]
+			'	isinstance: test_global, c',						# isinstance(items[test_global], items[c]) - a simple test
+																				# Don't get confused with items[location_tests] vs. 'location_tests'
+			'		getattr: location_tests = test_global, location_tests',		# items[location_tests] = getattr(items[test_global], 'location_tests')
+			'		cwo: location_tests = location_tests, is_outside, none',	# items[location_tests] = items[location_tests].clone_with_overrides(**{'is_outside', items[none]})
+			'		setattr: test_global, location_tests, location_tests',		# setattr(items[test_global], 'location_tests', items[location_tests])
+		]
+	}
+}

@@ -1,0 +1,24 @@
+{
+	'Sing Longer in Shower': {
+		'manager': 'INTERACTION',
+		'tunings': ['shower_TakeShower_SingInShower'],  # 141926
+		'items': ['basic_content', ],
+		# inspect - 141926 basic_content.conditional_actions.ExitCondition.conditions.TunableTimeRangeConditionWrapper._tuned_values
+		'process': [
+			'class: ExitCondition = interactions.utils.statistic_element.ExitCondition',
+			"classstr: TunableTimeRangeConditionWrapper = <class 'sims4.tuning.tunable.TunableFactory.TunableTimeRangeConditionWrapper'>",  # TunableTimeRangeConditionWrapper is not a class which can be loaded
+			'assign: min_duration = 10',  Default is min/max = 5. To consume less virtual water set both values to 1.
+			'assign: max_duration = 25',
+			'getattr: conditional_actions = basic_content, conditional_actions',
+			'foreach: conditional_action, conditional_actions',
+			'	isinstance: conditional_action, ExitCondition',
+			'		getattr: conditions = conditional_action, conditions',
+			'		foreach: condition, conditions',
+			'			isinstancestr: condition, TunableFactoryWrapper',  # Not efficient, use 'isinstance' if possible
+			'				getattr: _tuned_values = condition, _tuned_values',
+			'				if: _tuned_values',
+			'                   cwo: _tuned_values = _tuned_values, min_time, min_duration',
+			'                   cwo: _tuned_values = _tuned_values, max_time, max_duration',
+            '                   setattr: condition, _tuned_values, _tuned_values',
+		]
+	},

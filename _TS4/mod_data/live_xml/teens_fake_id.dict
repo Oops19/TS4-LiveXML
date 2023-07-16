@@ -1,0 +1,15 @@
+{
+	'Teens fake ID to identify as adults': {
+		'manager': 'SNIPPET',  # core/sims4/resources.py i="snippet"
+		'tunings': ['testSetInstance_YoungAdultOrAbove_YAE'], # 129094
+		'items': ['test'],
+		'process': [
+													# tuning = get_tuning(129094, SNIPPET) ... via 'tuning': '...',
+													# items[test] = getattr(tuning, 'test') .. via 'items': ['test'],
+			'frozenset: ages = 8, 16, 32, 64',		# items[ages] = frozenset({Age.TEEN, Age.YOUNGADULT, Age.ADULT, Age.ELDER})
+			'foreach: tuple, test',					# items[tuple] is set for each list entry in items[test]
+			'	foreach: elem, tuple',				# items[elem] is set for each list entry in items[tuple]
+			'		setattr: elem, ages, ages'		# setattr(items[elem], 'ages', items[ages])
+		]
+	}
+}

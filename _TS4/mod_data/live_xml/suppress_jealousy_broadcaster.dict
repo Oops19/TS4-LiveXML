@@ -1,0 +1,31 @@
+{
+	'Suppress Jealousy broadcaster': {
+		'manager': 'BROADCASTER',
+		'tunings': ['broadcaster_Jealousy*'],  # random IDs
+		'items': ['allow_sims'],
+		'process': [
+			'assign: value = False',
+			'setattr: tuning, allow_sims, value'
+		]
+	}
+}
+# Name: 'Suppress Jealousy broadcaster'
+# Description: -
+# 1. Read all the the 'BROADCASTER' tunings starting with 'broadcaster_Jealousy'.
+#	If more than one tuning was found all tunings will be processed one after the other.
+#	Tunings may contain wildcards: 'starting_with_*', '*_containing_*', '*_end_with'
+# 2. Read the property '{tuning}.allow_sims'
+#	We need to read these properties so we can set them later. Without a reference to them we can not set them.
+# 3. Set var = False.
+#	'var' is the only supported variable to store data. It can be bool, integer, float, string or an object.
+# 4. '{tuning}.allow_sims' = var (= False)
+#	Obviously the value of var will be used.
+
+# Tuning:
+# <?xml version="1.0" encoding="utf-8"?>
+# <I c="Broadcaster" i="broadcaster" m="broadcasters.broadcaster" n="broadcaster_Jealousy" s="76132">
+
+# INSTANCE_TUNABLES
+# 'allow_sims': Tunable(description='If checked then this broadcaster will consider Sims. This is on by default. If neither allow_objects or allow_sims is checked that will result in a tuning error.', tunable_type=bool, default=True)
+
+# This could log the error 'Broadcaster {tuning} is tuned to not allow any objects as targets.' if vanilla logging is enabled.

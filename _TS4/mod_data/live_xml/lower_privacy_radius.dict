@@ -1,0 +1,20 @@
+{
+	'Decrease the privacy radius': {
+		'manager': 'INTERACTION',  # core/sims4/resources.py  i="interaction"
+		'tunings': ['suntan_BeachTowel*', 'suntan_LoungeChair*', 'suntan_SitLoungeFloat*'], # 210704, ...
+		'items': ['test_globals'],
+		'process': [
+																			# tuning = get_tuning(210704, INTERACTION) ... via 'tuning': '...',
+																			# items[test_globals] = getattr(tuning, 'test_globals') .. via 'items': ['test_globals'],
+			'assign: radius = 8.0',											# items[radius]: float = 8.0
+			'class: SimsInConstraintTests = event_testing.constraint_tests.SimsInConstraintTests',	# items[SimsInConstraintTests]: class = class(...)
+			'class: TunedCircle = interactions.constraints.TunedCircle',	# items[TunedCircle]: class = class(...)
+			'foreach: test_global, test_globals',							# items[test_global] is set for each list entry in items[test_globals]
+			'	isinstance: test_global, SimsInConstraintTests',			# isinstance(items[test_global], items[SimsInConstraintTests]) - a simple test
+			'		getattr: constraints = test_global, constraints',		# items[constraints] = getattr(items[test_global], 'constraints')
+			'		foreach: constraint, constraints',						# items[constraint] is set for each list entry in items[constraints]
+			'			isinstance: constraint, TunedCircle',				# isinstance(items[constraint], items[TunedCircle]) - a simple test
+			'				setattr: constraint, radius, radius'			# setattr(items[constraint], 'radius', radius)
+		]
+	}
+}

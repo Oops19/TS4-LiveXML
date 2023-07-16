@@ -1,0 +1,168 @@
+[h3]Live XML[/h3]
+[b]Tuning Editor[/b]
+This mod is for everyone who wants to modify tuning values without editing XML files. It is the superior alternative to overrides.
+
+We often see XML tuning override mods which are 3 months old and when compared to the current XML it becomes obvious that EA added many new things to the XML files (fixes, buffs, traits, commodities, ...) which are missing in the mod.
+They often break when EA releases a new TS4 version.
+
+As a normal user you want to install this mod if another mod requires it.
+The mod itself does not modify the game play at all.
+Of course you can install it and benefit (or suffer) from the game changes caused by the included sample configuration files if you fail to remove them.
+This mod requires S4CL which can be downloaded from https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/latest
+
+The included README suggests installing them directly into 'Mods' but there is absolutely no reason to clutter the Mods folder with it.
+
+Details for mod creators how to create config files for this mod can be found below in [i]Creating custom settings[/i].
+
+[b]Real world example[/b]
+How would we implement the simple requirement to disable autonomy for one interaction?
+
+[h3]Copy XML Tuning[/h3]
+[b]Don't do this![/b] There are many mods which have been created like this, unfortunately.
+
+The simple way is to copy the tuning (eg 'stereo_Dance_LocalCultureSkill') and add a line [code]
+&lt;T n="allow_autonomous">False&lt;/T>
+[/code] to it.
+Then add the XML to a new .package and it's done.
+To do this for 10 similar tunings we copy all 10 files, edit them and add them to the .package.
+And then we pray to EA that they never ever modify these tunings, even though we know that we did it wrong.
+
+If you created your tunings mods like this you may consider to use this mod.
+In the image we see only three missing lines, totally 200 lines are missing in the (1 year ago) modded tuning.
+
+
+[h3]'Live edit' the XML[/h3]
+We need to gather the tunings, for this mod we need the name.
+Wildcards are supported, so it is easy to match similar tunings (eg 'stereo_Dance_*').
+To set the 'allow_autonomous' to 'False' technically the property of the loaded tuning has to be modified.
+With this mod we define a variable as 'False' and change the tuning.
+It looks a little bit like a basic language which it actually is:
+[code]
+assign: value = False
+setattr: tuning, allow_autonomous, value
+[/code]
+
+This code is executed as soon as a lot has been loaded and will then modify the loaded tunings on the fly.
+
+
+[b]Other real world examples[/b]
+There may be a long list with copied XML files which are now missing a lot of values.
+
+There are tests which you just want to disable and make them fail each time.
+For example to disable broadcasters setting 'allow_sims' to 'False' in the tuning often helps:
+[code]
+assign: value = False
+setattr: tuning, allow_sims, value
+[/code]
+
+There are 'max_value_tuning', 'max_duration', ... parameters with a high value to avoid a fast repeated execution of an interaction.
+Or they may have a low value to avoid that an effect lasts as long as it should, or vice versa.
+It's quite easy to fix it:
+[code]assign: value = 3660
+cwo: var = _temporary_commodity_info, max_duration, value  # optionally if we need to modify a frozenset
+setattr: tuning, max_value_tuning, value[/code]
+These were all simple examples and the mod may not yet support all the options to edit a tuning. Especially more complex tests may be hard to implement with this mod.
+
+So far location tests, radius size changes, creating sets and frozensets are supported. Also simple checks and loops are possible.
+Code may look like this:
+[code]frozenset: foo = 1, 2, 3
+foreach: tuple, bar
+    foreach: elem, tuple
+        setattr: elem, property, foo
+[/code]
+
+[b]Security[/b]
+
+This mod reads and parses configuration files with [i]literal_eval()[/i]  into  Python dict() elements.
+The elements are hopefully processed properly as variables and should never be executed.
+Please let me know if you can identify security issues, no one wants to run a mod with code injection or shell vulnerabilities.
+For now I recommend that you review the files before you save them to [i]mod_data/live_xml/[/i].
+
+I consider this mod to be safe, otherwise I would not publish it.
+
+
+[b]Mild Warning - Game mechanics changed[/b]
+The [i]mod_data/*.dict[/i] files modify tunings. They change the game mechanics and checks in various ways (like a .package with an XML does).
+* Please review the files in [i]mod_data[/i] and remove files which you do not want to use.
+* Filtering of broadcasts affects multiple sims.
+* Modified age/race/gender checks may allow sims to execute tasks which were never planned to be available for them.
+* Modified range checks may lower or increase the privacy need of sims.
+
+The included files should not affect the game-play too much but it's hard to test everything.
+
+[b]Cheat commands[/b]
+To create a new config file it makes sense to clean up the 'mod_data/live_xml' directory to work only with the new file.
+
+To reload the file [i]o19.live_xml.reload[/i] can be used, it will log everything to [i]mod_logs/LiveXML_Messages.log[/i].
+Logging is verbose, so you may see more messages than expected.
+
+[b]Installation[/b]
+The ZIP file should be extracted into the [i]The Sims 4[/i] folder to make sure that the folder structure is set up correctly.
+* All settings are read from [i]The Sims 4/mod_data/set_tuning_values/[/i].
+* The mod documentation (everything in [i]mod_documentation[/i]) should also not be stores in [i]Mods[/i].
+* The mod [i]set_tuning_values.ts4cript[/i] itself should be stored in [i]Mods[/i] or in a sub folder. I highly recommend storing it in [i]Mods/_o19_[/i] so you know who created it.
+
+Unless not yet installed: Install [url=https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/latest]S4CL[/url] as this mod is required.
+As of now the filename is sims4communitylib.v1.77.zip. I highly recommend extracting both 'sims4communitylib.*' files to [i]Mods/_cn_[/i] so you can easily locate the script mod and update it.
+
+This mod has been tested with  1.87.40 (2022-04-26) and S4CL v1.77 (2022-05-03).
+It is expected to work with many older and upcoming releases of TS4 and S4CL.
+
+[b]Merging[/b]
+Most people do not merge script mods. This mod may be merged with a ZIP program with other mods. The file name may be renamed, it is not used to reference anything.
+
+
+[b]Future[/b]
+It is possible to exploit the [i]Snippet Tuning[/i] XML format to add there JSON data (or within XML tags) so a mod creator can still deliver a .package file instead of a file to be stored in [i]mod_data[/i].
+
+For simple and common properties a pie menu interaction may be added to all objects. It would be easy to implement but I'm not sure whether we really need this.
+
+[b]Creating Custom Settings[/b]
+The current update adds an 'inspect' command which collides with scumbumbo's inspect command. With this [B]update[/B] make sure to remove scumbumbo's 'inspector.py'. Somehow I miss his mod. :cry:
+The  [url=https://modthesims.info/showthread.php?t=575118]inspector[/url] by [url=https://modthesims.info/m/7401825]scumbumbo[/url] is probably the 2nd best tool ever written for TS4 to avoid that mods break with every update.
+Many mod creators know about it but only a few use it. They create bogus mods on purpose which break with every update even though they could avoid it.
+
+To modify a tuning it may be best to inspect it with the inspector and to take note about the needed parameter names and values.
+:!: [b]Update v0.8[/b]
+[S]Locating the parameters may require some work and one will get used to it. One may also need to modify the inspector.py file to dig deeper into the structures.[/S]
+With the 'inspect' command of this mod it is easy to drill down into tunings. It drills into properties (like scumbumbo's inspector does) but also into tunings, sets, dicts and classes. This allows to dive deep into the tuning internals with [B]inspect ...[/B] without writing code. Hints for Live XML are written to the log file which will be written to 'The Sims 4/mod_logs/'. The log file will no longer be appended to make searching it in more easy.
+
+Some documented examples can be found in 'mod_data'.
+
+:!: [b]Update v0.8[/b]
+[h3]Tutorials[/h3]
+[list]
+[*] [url=https://modthesims.info/showthread.php?p=5827872]Faster Gardening - Tutorial for a Live XML mod[/url]
+[/list]
+
+[h3]Configuration file structure[/h3]
+Everything which must be replaced has been put into round brackets [i](...)[/i]. The brackets and everything in between must be replaced.
+
+[b]Structure:[/b]
+[code]
+{
+	'(custom unique name)': {
+		'manager': '(needed manager, ususally in upper case)',  # core/sims4/resources.py or in tuning i="..."
+		'tunings': ['(a tuning name, leading and ending wildcards * are supported)', '(another tuning name)'],  # you may add the tuning IDs as comment here
+		'items': ['(to fetch a few properties of the tuning define them here)'],
+		'process': [
+		    '(first command)',
+		    '(second command)',  # and so on.
+		    '(loop OR if command)',
+		    '    (inner loop command OR process if==True)', # use 4 spaces or TAB for the commands within the loop.
+		]
+	}
+}[/code]
+
+
+[h3]Commands[/h3]
+See [url]https://github.com/Oops19/TS4-LiveXML[/url] as translating this section to BB is a pain.
+
+[h3]Update 0.8.0 to 0.8.2[/h3]
+This is a small update and addresses parsing of the scripts.
+* If 'attributes' are defined within 'items: [..., ]' and they don't exist they will be set to None now instead of skipping the tuning.
+* The 1st line of the script is now properly detected as the first line.
+
+[h3]Update 0.6.0 to 0.8.0[/h3]
+* Adding 'inspect' to drill down into tunings.
+* Added many new commands and functions.

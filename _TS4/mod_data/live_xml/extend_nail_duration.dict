@@ -1,0 +1,52 @@
+{
+	'extend nail duration to 7 (1) days': {
+		'manager': 'BUFF',
+		'tunings': ['buff_Object_MassageChair_Manicure_Nail_*'],  # all tunings in range 271251..272825
+		'items': ['_temporary_commodity_info.max_duration', 'commodity.max_value', 'commodity.max_value_tuning', 'commodity.initial_value', ],
+		'process': [
+			'assign: value = 10080',
+			'setattr: commodity, max_value, value',
+			'setattr: commodity, max_value_tuning, value',
+			'setattr: commodity, initial_value, value',
+			'cwo: var = _temporary_commodity_info, max_duration, var',
+			'setattr: tuning, _temporary_commodity_info, var',
+		]
+	}
+}
+
+# Name: 'extend nail duration to 7 (1) days'
+# Description: -
+# 1. Read the 'BUFF' tunings starting with 'buff_Object_MassageChair_Manicure_Nail_'
+#	If more than one tuning was found all tunings will be processed one after the other.
+#	Tunings may contain wildcards: 'starting_with_*', '*_containing_*', '*_end_with'
+# 2. Read the properties '{tuning}._temporary_commodity_info' and '{tuning}._temporary_commodity_info.max_duration'
+#	We need to read these properties so we can set them later. Without a reference to them we can not set them.
+# 3. Set var = 10080. (10080/1440 = 7 days)
+#	'var' is the only supported variable to store data. It can be bool, integer, float, string or an object.
+# 4a. 'max_value' = var (=10080)
+#	Obviously the value of var will be used.
+# 4b. 'max_value_tuning' = var (=10080)
+# 5c. 'initial_value' = var (=10080)
+# 6. '_temporary_commodity_info' is a 'frozenset'. To change a value we use the TS4 function clone_with_overrides to clone it. The new value for 'max_duration' is var (=10080). The result is assigned to 'var'.
+# 7. Replace '_temporary_commodity_info' with 'var' which is now a new 'frozenset' with 'max_duration' replaced.
+
+# Tuning:
+# <?xml version="1.0" encoding="utf-8"?>
+# <I c="Buff" i="buff" m="buffs.buff" n="buff_Object_MassageChair_Manicure_Nail_Round_Beige" s="271251">
+#  <V n="_temporary_commodity_info" t="enabled">
+#    <U n="enabled">
+#      <T n="max_duration">1440</T>
+
+# To extend the nail duration there are a few mods available.
+# One could of course create an override for all buffs and replace 1440 with 4320 to make sure that the mod containing the override breaks with one of the next updates.
+# 'Bad' example: https://www.patreon.com/posts/longer-lasting-56195285
+
+# Partially scripted example: https://kuttoe.itch.io/mini-mod-longer-lasting-nails with '[Kuttoe] LongerLastingNails.zip'
+# I only modify the max_duration
+
+# # Example: https://www.patreon.com/posts/longer-lasting-56195285
+# duration = 4320
+# tuning._temporary_commodity_info = tuning._temporary_commodity_info.clone_with_overrides(max_duration=duration)
+# tuning.commodity.max_value = duration
+# tuning.commodity.max_value_tuning = duration
+# tuning.commodity.initial_value = duration
