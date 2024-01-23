@@ -1,4 +1,4 @@
-#  Live XML
+# Live XML
 
 ### Tuning Editor
 This mod is for everyone who wants to modify tuning values without editing XML files. It is the superior alternative to overrides.
@@ -35,7 +35,7 @@ Wildcards are supported, so it is easy to match similar tunings (eg 'stereo_Danc
 To set the 'allow_autonomous' to 'False' technically the property of the loaded tuning has to be modified.
 With this mod we define a variable as 'False' and change the tuning.
 It looks a little bit like a basic language which it actually is:
-```
+```text
 assign: value = False
 setattr: tuning, allow_autonomous, value
 ```
@@ -47,7 +47,7 @@ There may be a long list with copied XML files which are now missing a lot of va
 
 There are tests which you just want to disable and make them fail each time.
 For example to disable broadcasters setting 'allow_sims' to 'False' in the tuning often helps:
-```
+```text
 assign: value = False
 setattr: tuning, allow_sims, value
 ```
@@ -55,7 +55,7 @@ setattr: tuning, allow_sims, value
 There are 'max_value_tuning', 'max_duration', ... parameters with a high value to avoid a fast repeated execution of an interaction.
 Or they may have a low value to avoid that an effect lasts as long as it should, or vice versa.
 It's quite easy to fix it:
-```
+```text
 assign: value = 3660
 cwo: var = _temporary_commodity_info, max_duration, value  # optionally if we need to modify a frozenset
 setattr: tuning, max_value_tuning, value
@@ -65,7 +65,7 @@ These were all simple examples and the mod may not yet support all the options t
 
 So far location tests, radius size changes, creating sets and frozensets are supported. Also simple checks and loops are possible.
 Code may look like this:
-```
+```text
 frozenset: foo = 1, 2, 3
 foreach: tuple, bar	
     foreach: elem, tuple
@@ -239,13 +239,13 @@ Also within `<V n="outcome" t="single"><U n="single"><U n="actions"><L n="basic_
 # Addendum
 
 ## Game compatibility
-This mod has been tested with `The Sims 4` 1.98.158 (2023-06), S4CL 2.7 (2023-06), TS4Lib 0.0.24 (2023-06).
+This mod has been tested with `The Sims 4` 1.100.147 (2023-09), S4CL 2.8 (2023-08), TS4Lib 0.1.7 (2023-09).
 It is expected to be compatible with many upcoming releases of TS4, S4CL and TS4Lib.
 
 ## Dependencies
 * [The Sims 4](https://www.ea.com/games/the-sims/the-sims-4)
+* [TS4-Library](https://github.com/Oops19/TS4-Library/releases/latest)
 * [S4CL](https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/latest)
-* [TS4Lib](https://github.com/Oops19/TS4-Library/releases/latest)
 
 If not installed download and install TS4 and these mods.
 All are available for free.
@@ -268,7 +268,7 @@ This mod does not send any data to tracking servers. The code is open source, no
 Some log entries in the log file ('mod_logs' folder) may contain the local username, especially if files are not found (WARN, ERROR).
 
 ## External Links
-[Sources](https://github.com/Oops19/)
+[Sources](https://v/Oops19/)
 [Support](https://discord.gg/d8X9aQ3jbm)
 [Donations](https://www.patreon.com/o19)
 
