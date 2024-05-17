@@ -23,7 +23,7 @@ from ts4lib.libraries.ts4folders import TS4Folders
 from ts4lib.utils.basic_extras import BasicExtras
 from ts4lib.utils.tuning_helper import TuningHelper
 
-log: CommonLog = CommonLogRegistry.get().register_log(f"{ModInfo.get_identity().name}", ModInfo.get_identity().name)
+log: CommonLog = CommonLogRegistry.get().register_log(ModInfo.get_identity(), ModInfo.get_identity().name)
 log.enable()
 log.debug(f"Starting {ModInfo.get_identity().name} v{ModInfo.get_identity().version}")
 log.disable()
