@@ -34,10 +34,12 @@ class ModInfo(CommonModInfo):
 
     @property
     def _version(self) -> str:
-        return '1.0.6'
+        return '1.0.7'
 
 
-"""
+r'''
+v1.0.7
+    Tested with TS4 v1.107
 v1.0.6
     Updated README for new TS4 version.
 v1.0.5
@@ -112,4 +114,4 @@ v1.0.0
         Deprecated 'var = value', only 'var = cwo: value, value, value' should be used. Use 'set:' instead.
         New: 'set: var_name = value
         New: 'getattr: a, b, c' which is executed as 'c = getattr(a, b) as'
-"""
+'''
