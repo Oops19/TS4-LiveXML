@@ -1,0 +1,34 @@
+{
+	'Add filters to paintings': {
+		'manager_imp': 'OBJECT',
+		'tunings_imp': ["object_Canvas_*", ],  # Currently: "object_Canvas_small", "object_Canvas_med", "object_Canvas_large"
+		'manager': 'INTERACTION',
+		# 'tunings': ["immediateSI_Photos_SetFilter_*"],
+		'tunings': ["o19_immediateSI_Photos_SetFilter_PAINT", "immediateSI_Photos_SetFilter_*"],  # There's no problem if o19_immediateSI_Photos_SetFilter_PAINT is missing.
+		'items': [],
+		'process': [
+			'tuple: tuning2 = **tuning**',
+			'foreach: imp_tuning, tunings_imp_tunings',
+			'    getattr: _super_affordances = imp_tuning, _super_affordances',
+			'    if: _super_affordances',
+			'        addut: new_super_affordances = _super_affordances, tuning2',
+			'        setattr: imp_tuning, _super_affordances, new_super_affordances',
+		],
+	},
+}
+
+# This mod replaces most functionality of https://modthesims.info/d/602945/set-filters-on-paintings-by-reference-v4.html.
+# Delete 'MTS_Scumbumbo_SetFiltersOnPaintingsByReference*.*' from 'Mods' if you use this mod.
+#
+# There are Super Interactions for most filters. There is no for filter for 'PAINT_PLAIN' which is used for paintings.
+# If you ever apply a filter to a painting it's impossible to change it back to 'PAINT_PLAIN' with this mod.
+# Upcoming versions of LiveXML may allow to copy tunings and to modify the copy.
+# Currently an additional .package file with the missing SuperInteraction is needed.
+
+# This type conversion is quite useful also for other mods. I believe the other code is quite easy to understand.
+# 'HashedTunedInstanceMetaclass' itself is not hashable and can not be appended to a tuple.
+# 'tuple: tuning2 = **tuning**',
+#	Convert `<class 'sims4.tuning.class.instances.HashedTunedInstanceMetaclass'>´ = `<class 'sims4.tuning.instances.immediateSI_Photos_SetFilter_...'>´
+#	to `<class 'tuple'>´ = `(<class 'sims4.tuning.instances.immediateSI_Photos_SetFilter_...'>,)´
+#
+
