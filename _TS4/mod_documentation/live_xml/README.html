@@ -1,0 +1,438 @@
+<h1>Live XML</h1>
+<br/>
+<h3>Tuning Editor</h3>
+This mod is for everyone who wants to modify tuning values without editing XML files. It is the superior alternative to overrides.<br/>
+<br/>
+We often see xml tuning override mods which are 3 months old and when compared to the current XML it becomes obvious that EA added many new things to the XML files (fixes, buffs, traits, commodities, ...) which are missing in the mod.<br/>
+They often break when EA releases a new TS4 version.<br/>
+<br/>
+As a normal user you want to install this mod if another mod requires it.<br/>
+The mod itself does not modify the game play at all.<br/>
+Of course, you can install it and benefit (or suffer) from the game changes caused by the included sample configuration files if you fail to remove them.<br/>
+<br/>
+This mod requires S4CL which can be downloaded from <a href='https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/latest'>https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/latest</a><br/>
+<br/>
+A command to help creating config files is now included.<br/>
+<br/>
+<h2>Real world example</h2>
+How would we implement the simple requirement to disable autonomy for one interaction?<br/>
+<br/>
+<h3>Copy XML Tuning</h3>
+**Don't do this!** There are many mods which have been created like this, unfortunately.<br/>
+<br/>
+The simple way is to copy the tuning (eg 'stereo_Dance_LocalCultureSkill') and add a line <i>&lt;T n="allow_autonomous"&gt;False&lt;/T&gt;</i> to it.<br/>
+Then add the XML to a new .package and it's done.<br/>
+To do this for 10 similar tunings we copy all 10 files, edit them and add them to the .package.<br/>
+And then we pray to EA that they never ever modify these tunings, even though we know that we did it wrong.<br/>
+<br/>
+If you created your tunings mods like this you may consider to use this mod.<br/>
+In the image we see only three missing lines, totally 200 lines are missing in the modded tuning.<br/>
+<br/>
+<br/>
+<h3>'Live edit' the XML</h3>
+We need to gather the tunings, for this mod we need the name.<br/>
+Wildcards are supported, so it is easy to match similar tunings (eg 'stereo_Dance_*').<br/>
+To set the 'allow_autonomous' to 'False' technically the property of the loaded tuning has to be modified.<br/>
+With this mod we define a variable as 'False' and change the tuning.<br/>
+It looks a little bit like a basic language which it actually is:<br/>
+<pre>
+assign: value = False
+setattr: tuning, allow_autonomous, value
+</pre>
+This code is executed as soon as a lot has been loaded and will then modify the loaded tunings on the fly.<br/>
+<br/>
+<br/>
+<h2>Other real world examples</h2>
+There may be a long list with copied XML files which are now missing a lot of values.<br/>
+<br/>
+There are tests which you just want to disable and make them fail each time.<br/>
+For example to disable broadcasters setting 'allow_sims' to 'False' in the tuning often helps:<br/>
+<pre>
+assign: value = False
+setattr: tuning, allow_sims, value
+</pre>
+<br/>
+There are 'max_value_tuning', 'max_duration', ... parameters with a high value to avoid a fast repeated execution of an interaction.<br/>
+Or they may have a low value to avoid that an effect lasts as long as it should, or vice versa.<br/>
+It's quite easy to fix it:<br/>
+<pre>
+assign: value = 3660
+cwo: var = _temporary_commodity_info, max_duration, value  # optionally if we need to modify a frozenset
+setattr: tuning, max_value_tuning, value
+</pre>
+<br/>
+These were all simple examples and the mod may not yet support all the options to edit a tuning. Especially more complex tests may be hard to implement with this mod.<br/>
+<br/>
+So far location tests, radius size changes, creating sets and frozensets are supported. Also simple checks and loops are possible.<br/>
+Code may look like this:<br/>
+<pre>
+frozenset: foo = 1, 2, 3
+foreach: tuple, bar
+    foreach: elem, tuple
+        setattr: elem, property, foo
+</pre>
+<br/>
+<br/>
+<h2>Security</h2>
+This mod reads and parses configuration files with <i>literal_eval()</i>  into  Python dict() elements.<br/>
+The elements are hopefully processed properly as variables and should never be executed.<br/>
+Please let me know if you can identify security issues, no one wants to run a mod with code injection or shell vulnerabilities.<br/>
+For now I recommend that you review the files before you save them to <i>mod_data/live_xml/</i>.<br/>
+<br/>
+I consider this mod to be safe, otherwise I would not publish it.<br/>
+<br/>
+<br/>
+<h2>Mild Warning - Game mechanics changed</h2>
+The <i>mod_data/*.dict</i> files modify tunings. They change the game mechanics and checks in various ways (like a .package with an XML does).<br/>
+<ul>
+	<li>Please review the files in <i>mod_data</i> and remove files which you do not want to use.</li>
+	<li>Filtering of broadcasts affects multiple sims.</li>
+	<li>Modified age/race/gender checks may allow sims to execute tasks which were never planned to be available for them.</li>
+	<li>Modified range checks may lower or increase the privacy need of sims.</li>
+</ul>
+<br/>
+The included files should not affect the game-play too much but it's hard to test everything.<br/>
+<br/>
+<br/>
+<h2>Cheat commands</h2>
+To create a new config file it makes sense to clean up the 'mod_data/live_xml' directory to work only with the new file.<br/>
+<br/>
+To reload the file <i>o19.live_xml.reload</i> can be used, it will log everything to <i>mod_logs/LiveXML_Messages.log</i>.<br/>
+Logging is verbose, so you may see more messages than expected.<br/>
+<br/>
+<h2>Mod collision</h2>
+This mod uses the cheat command 'inspect' and collides with similar mods like 'inspector.py' by scumbumbo.<br/>
+<br/>
+<h2>Merging</h2>
+Most people do not merge script mods. This mod may be merged with a ZIP program with other mods. The file name may be renamed, it is not used to reference anything.<br/>
+<br/>
+<br/>
+<h2>Future</h2>
+It is possible to exploit the <i>Snippet Tuning</i> XML format to add there JSON data (or within XML tags) so a mod creator can still deliver a .package file instead of a file to be stored in <i>mod_data</i>.<br/>
+<br/>
+For simple and common properties a pie menu interaction may be added to all objects. It would be easy to implement but I'm not sure whether we really need this.<br/>
+<br/>
+<br/>
+<h2>Creating custom settings</h2>
+Please use the 'Tuning Inspector' which is now a standalone mod. Both 'Live XML' and 'Patch XML' may need the inspector so it makes sense to have it as a unique mod.<br/>
+<br/>
+<br/>
+<br/>
+<h3>Configuration file structure</h3>
+Everything which must be replaced has been put into round brackets <i>(...)</i>. The brackets and everything in between must be replaced.<br/>
+<br/>
+<h5>Structure:</h5>
+<pre>
+{
+	'(custom unique name)': {
+		'manager_imp': '(ususally in upper case)',  # optional parameter
+		'tunings_imp': ['(a tuning name, leading and ending wildcards * are supported)', '(another tuning name)'],  # optional parameter
+		'manager': '(needed manager, ususally in upper case)',  # core/sims4/resources.py or in tuning i="..."
+		'tunings': ['(a tuning name, leading and ending wildcards * are supported)', '(another tuning name)'],  # you may add the tuning IDs as comment here
+		'items': ['(to fetch a few properties of the tuning define them here)'],
+		'process': [
+		    '(first command)',
+		    '(second command)',  # and so on.
+		    '(loop OR if command)',
+		    '    (inner loop command OR process if==True)', # use 4 spaces or TAB for the commands within the loop.
+		],
+        'command': '(debug command)',  # To run a command
+        'command_parameters': '(debug command argument)',  # To run a command
+	}
+}
+</pre>
+<br/>
+<h3>Referencing Tunings</h3>
+To access the IDs or tunings of buffs or traits to add them to a block or allow list one may start the configuration with:<br/>
+<ul>
+	<li>`'manager_imp': '...',</i> and</li>
+	<li>`'tunings_imp': ['...', '...', ]</i> - This will add to variables:</li>
+	<li>`*tunings_imp_tunings = tuple(&lt;class ...&gt;, )`</li>
+	<li>`*tunings_imp_ids = tuple(123, )`</li>
+</ul>
+<br/>
+They can later be accessed as a normal variable and add a class list of tunings to an EA allow list:<br/>
+<ul>
+	<li>`add: new_whitelist_traits = whitelist_traits, tunings_imp_tunings',`</li>
+</ul>
+<br/>
+<h3>Commands</h3>
+All strings which end with <i>*</i> are added to/read from a local data store. So <i>var*</i> is not the same as <i>var</i>. Don't get confused.<br/>
+<br/>
+<ul>
+	<li>`'manager': '...',</i> and</li>
+	<li>`'tunings': ['...', '...', ]</i> - 'tuning*' = get_tuning(tuning-names, manager-name)</li>
+</ul>
+If tunings match more than one tuning then all tunings will be processed one after the other in a loop.<br/>
+<br/>
+Within <i>process</i> the business logic is added.<br/>
+<ul>
+	<li>`'items': ['...', '...', ]</i> - All these items will be added to global variables.</li>
+	<li>The item 'foo' will be added to the global variable 'foo*' with the value of 'tuning.foo'.</li>
+	<li>The item 'foo.bar' wil add 'foo*' as above and 'bar*' with the value of 'tuning.foo.bar'.</li>
+	<li>The <i>getattr:</i> command could also be used.</li>
+</ul>
+<br/>
+<ul>
+	<li>`assign: var* = value</i> - Value 'value' may be 'None', 'True', 'False', an integer or a float number or a string. It will be assigned to 'var*'. 'value' is a string and does not reference to a variable.</li>
+	<li>`getattr: var* = obj*, prop</i> - The 'prop' property of 'obj*' will be assigned to 'var*'. 'prop' is a string and does not reference to a variable.</li>
+	<li>`setattr: obj*, prop, value*</i> - Sets the property 'prop' of the 'obj*' to 'value*'. 'prop' is a string while 'value*' references a variable which has been assigned before.</li>
+	<li>`class: var* = string</i> - Assign the class 'string' to 'var*'. This is not a string assignment, the class must exist.</li>
+	<li>`classstr: var* = string</i> - Assign the 'string' to 'var*'. This is a string assignment and should only be used if the class can't be loaded (eg for Wrapper classes).</li>
+	<li>`frozenset: var* = <i> - Create an empty frozenset.</li>
+	<li>`frozenset: var* = value, value2, ...</i> - Create a frozenset() with 1-n elements. See 'assign:' for possible values.</li>
+	<li>`set: var* = value, value2, ...</i> - Create a set() with 1-n elements. See 'assign:' for possible values.</li>
+	<li>`tuple: var* = value, value2, ...</i> - Create a tuple() with 1-n elements. See 'assign:' for possible values.</li>
+	<li>`list: var* = value, value2, ...</i> - Create a list() with 1-n elements. See 'assign:' for possible values.</li>
+	<li>For <i>frozenset, set, tuple, list</i> <i>'**var**'</i> may be specified instead of <i>value, value2, ...</i>. In this case the value of 'var*' will be assigned. Very useful to assign a class/tuning to a tuple.</li>
+	<li>`cwo: var* = obj*, key, value*</i> - Clone object 'obj*' with 'ImmutableSlots' 'key' to new 'value*' and store it in 'var*'</li>
+	<li>`print: var*</i> - Print the value of a variable for debug purposes.</li>
+	<li>`printmembers: var*</i> - Print the value of a variable and all its members for debug purposes.</li>
+</ul>
+<br/>
+Simple mathematical functions. Hopefully <i>sin/cos/tan/sqrt/pow()</i> are not needed.<br/>
+<ul>
+	<li>`mul: var* = var1*, var2*</i> - Assign 'var1*' * 'var2*' to 'var*'.</li>
+	<li>`div: var* = var1*, var2*</i> - Assign 'var1*' / 'var2*' to 'var*'.</li>
+	<li>`add: var* = var1*, var2*</i> - Assign 'var1*' + 'var2*' to 'var*'.</li>
+	<li>`sub: var* = var1*, var2*</i> - Assign 'var1*' - 'var2*' to 'var*'.</li>
+	<li>`addut: var* = var1*, var2*</i> - Assign 'var1*' + 'var2*' to 'var*'. Convert var* to a Tuple with Unique values. - <i>tuple(set(var*))`</li>
+	<li>`addul: var* = var1*, var2*</i> - Assign 'var1*' + 'var2*' to 'var*'. Convert var* to a List with Unique values. - <i>list(set(var*))`</li>
+</ul>
+Both <i>addu?:</i> commands shuffle the order of the elements. This should be no issue.<br/>
+<br/>
+TODO<br/>
+Replacement functions<br/>
+<ul>
+	<li>`--add: var*, value, value2, ...</i> - Append 'value', 'value2', ... to '*var'.</li>
+	<li>`--del: var*, value, value2, ...</i> - Remove 'value', 'value2', ... from '*var'.</li>
+	<li>`--sub: var*, value1, value2</i> - Substitute 'value1' with 'value2' in '*var'.</li>
+</ul>
+For all three commands <i>'**var**'</i> may be specified. In this case the value of 'var*' will be used.<br/>
+<br/>
+Loops, Ifs, etc. allow creating more complex configurations.<br/>
+<ul>
+	<li>`if: var*</i> - Checks whether 'var*' is set.</li>
+	<li>`ifnot: var*</i> - Checks whether 'var*' is not set.</li>
+	<li>`ifis: var1*, var2*</i> - Checks whether 'var1*' == 'var2*'.</li>
+	<li>`ifnotis: var1*, var2*</i> - Checks whether 'var1*' != 'var2*'.</li>
+	<li>`ifin: var1*, var2*</i> - Checks whether 'var1*' in 'var2*'. 'var2*' should be a set/list/tuple</li>
+	<li>`ifnotin: var1*, var2*</i> - Checks whether ''var1*' not in 'var2*'.</li>
+	<li>`isinstance: var*, class*</i> - Checks whether 'var*' is an instance of 'class*'.</li>
+	<li>`isinstancestr: var*, classstr*</i> - Checks whether 'type(var*)' is the same as 'classstr*'.</li>
+	<li>`isinstancetypestr: var*, class*</i> - Checks whether 'var*: type(var*)' is the same as 'classstr*'.</li>
+	<li>`foreach: var*, vars*</i> - Loop over all elements in 'vars*' and assign them to 'var*'</li>
+</ul>
+<br/>
+All following command have to be intended with 1 TAB or 4 SPACE characters.<br/>
+Checks and loops can be nested, the next level has to be intended with another TAB or 4 SPACE characters.<br/>
+There is no else available, as soon as the intent is removed the 'if' part ends.<br/>
+<br/>
+<h3>'Do Command'</h3>
+Interactions allow specifying <i>&lt;L n="basic_extras"&gt;&lt;V t="do_command"&gt;</i> to call a Python command when an interaction is executed.<br/>
+As with the process commands a manager is needed (INTERACTION highly suggested, the default) and tunings are needed to be modified.<br/>
+Instead of <i>process</i> the following parameters are used:<br/>
+<ul>
+	<li>`'manager': INTERACTION,</i> - Defaults to <i>INTERACTION</i> if not specified.</li>
+	<li>`'tunings': ['...', '...', ]</i> - Required. See above</li>
+	<li>`'command': '...'</i> - Required. The command to be executed. Call it from the debug console (Shift+Ctrl+C) to test it.</li>
+	<li>`'command_parameters: '...'</i> - Required if you want to specify arguments. The mod will prepend the tuning name or id to the <i>command_parameters</i> with '+' as a separator. One may join multiple arguments with '+' and specify them all as one string. Like 'buff_add_123+trait_add_123'.</li>
+	<li>`'command_timing': '...'</i> - Optional. May be either <i>at_end</i> (default) or <i>at_beginning`.</li>
+	<li>`'command_offset_time': '...'</i> - Optional. <i>command_timing</i> must be <i>at_beginning</i> and the command will be called with some delay. This is not required as it requires 'a lot' CPU resources.</li>
+	<li>`'command_xevt_id': '...'</i> - Optional. The <i>xevt_id</i> which has been specified in a clip head ot the animation may be specified to run the command at the proper time within the animation.</li>
+</ul>
+<br/>
+LiveXML itself does not include a command to be called.<br/>
+It supports mod creators who need more complex actions to write them with Python and call them from within the interaction.<br/>
+<br/>
+LiveXML may implement in the future:<br/>
+<ul>
+	<li>Add/remove buffs and traits</li>
+	<li>Change the outfit</li>
+	<li>Dress/undress hat, gloves, socks and shoes</li>
+	<li>Add/remove body hair</li>
+	<li>Age up/down sim</li>
+	<li>Change fit/fat/body sliders</li>
+</ul>
+<br/>
+Also within <i>&lt;V n="outcome" t="single"&gt;&lt;U n="single"&gt;&lt;U n="actions"&gt;&lt;L n="basic_extras"&gt;</i> <i>do_command</i> may be added - this is not yet supported by this mod.<br/>
+<br/>
+<br/>
+<h1>Addendum</h1>
+<br/>
+<h2>Game compatibility</h2>
+This mod has been tested with <i>The Sims 4</i> 1.111.102, S4CL 3.9, TS4Lib 0.3.33.<br/>
+It is expected to be compatible with many upcoming releases of TS4, S4CL and TS4Lib.<br/>
+<br/>
+<h2>Dependencies</h2>
+Download the ZIP file, not the sources.<br/>
+<ul>
+	<li><a href='../../releases/latest'>This Mod</a></li>
+	<li><a href='https://github.com/Oops19/TS4-Library/releases/latest'>TS4-Library</a></li>
+	<li><a href='https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/latest'>S4CL</a></li>
+	<li><a href='https://www.ea.com/games/the-sims/the-sims-4'>The Sims 4</a></li>
+</ul>
+<br/>
+If not installed download and install TS4 and these mods.<br/>
+All are available for free.<br/>
+<br/>
+<h2>Installation</h2>
+<ul>
+	<li>Locate the localized <i>The Sims 4</i> folder which contains the <i>Mods</i> folder.</li>
+	<li>Extract the ZIP file into this <i>The Sims 4</i> folder.</li>
+	<li>It will create the directories/files <i>Mods/_o19_/$mod_name.ts4script`, <i>Mods/_o19_/$mod_name.package`, <i>mod_data/$mod_name/*</i> and/or <i>mod_documentation/$mod_name/*`</li>
+	<li>`mod_logs/$mod_name.txt</i> will be created as soon as data is logged.</li>
+</ul>
+<br/>
+<h3>Manual Installation</h3>
+If you don't want to extract the ZIP file into <i>The Sims 4</i> folder you might want to read this.<br/>
+<ul>
+	<li>The files in <i>ZIP-File/mod_data</i> are usually required and should be extracted to <i>The Sims 4/mod_data`.</li>
+	<li>The files in <i>ZIP-File/mod_documentation</i> are for you to read it. They are not needed to use this mod.</li>
+	<li>The <i>Mods/_o19_/*.ts4script</i> files can be stored in a random folder within <i>Mods</i> or directly in <i>Mods</i>. I highly recommend to store it in <i>_o19_</i> so you know who created it.</li>
+</ul>
+<br/>
+<h2>Usage Tracking / Privacy</h2>
+This mod does not send any data to tracking servers. The code is open source, not obfuscated, and can be reviewed.<br/>
+<br/>
+Some log entries in the log file ('mod_logs' folder) may contain the local username, especially if files are not found (WARN, ERROR).<br/>
+<br/>
+<h2>External Links</h2>
+<a href='https://github.com/Oops19/'>Sources</a><br/>
+<a href='https://discord.gg/d8X9aQ3jbm'>Support</a><br/>
+<a href='https://www.patreon.com/o19'>Donations</a><br/>
+<br/>
+<h2>Copyright and License</h2>
+<ul>
+	<li>© 2024 <a href='https://github.com/Oops19'>Oops19</a></li>
+	<li>License for '.package' files: <a href='https://tos.ea.com/legalapp/WEBTERMS/US/en/PC/'>Electronic Arts TOS for UGC</a></li>
+	<li>License for other media unless specified differently: <a href='https://creativecommons.org/licenses/by/4.0/'>CC BY 4.0</a> unless the Electronic Arts TOS for UGC overrides it.</li>
+</ul>
+This allows you to use this mod and re-use the code even if you don't own The Sims 4.<br/>
+Have fun extending this mod and/or integrating it with your mods.<br/>
+<br/>
+Oops19 / o19 is not endorsed by or affiliated with Electronic Arts or its licensors.<br/>
+Game content and materials copyright Electronic Arts Inc. and its licensors.<br/>
+Trademarks are the property of their respective owners.<br/>
+<br/>
+<h3>TOS</h3>
+<ul>
+	<li>Please don't put it behind a paywall.</li>
+	<li>Please don't create mods which break with every TS4 update.</li>
+	<li>For simple tuning modifications use <a href='https://github.com/Oops19/TS4-PatchXML'>Patch-XML</a></li>
+	<li>or <a href='https://github.com/Oops19/TS4-LiveXML'>LiveXML</a>.</li>
+	<li>To check the XML structure of custom tunings use <a href='https://github.com/Oops19/TS4-VanillaLogs'>VanillaLogs</a>.</li>
+</ul>
+<br/>
+<br/>
+<br/>
+<h1>Addendum</h1>
+<br/>
+<h2>Game compatibility</h2>
+This mod has been tested with <i>The Sims 4</i> 1.112.519, S4CL 3.10, TS4Lib 0.3.36.<br/>
+It is expected to be compatible with many upcoming releases of TS4, S4CL and TS4Lib.<br/>
+<br/>
+<h2>Dependencies</h2>
+Download the ZIP file, not the sources.<br/>
+<ul>
+	<li><a href='../../releases/latest'>This Mod</a></li>
+	<li><a href='https://github.com/Oops19/TS4-Library/releases/latest'>TS4-Library</a></li>
+	<li><a href='https://github.com/ColonolNutty/Sims4CommunityLibrary/releases/latest'>S4CL</a></li>
+	<li><a href='https://www.ea.com/games/the-sims/the-sims-4'>The Sims 4</a></li>
+</ul>
+<br/>
+If not installed download and install TS4 and these mods.<br/>
+All are available for free.<br/>
+<br/>
+<h2>Removal of the mod</h2>
+The mod installation with unzip writes to a few directories.<br/>
+To remove this mod and all related files locate the files and folders and remove them:<br/>
+<ul>
+	<li>`The Sims 4/Mods/_o19_/$mod_name.*`</li>
+	<li>`The Sims 4/mod_data/_o19_/$mod_name/`</li>
+	<li>`The Sims 4/mod_documentation/_o19_/$mod_name/`</li>
+	<li>`The Sims 4/mod_sources/_o19_/$mod_name/`</li>
+</ul>
+<br/>
+To remove all of my mods locate these folders and remove them:<br/>
+<ul>
+	<li>`The Sims 4/Mods/_o19_/`</li>
+	<li>`The Sims 4/mod_data/_o19_/`</li>
+	<li>`The Sims 4/mod_documentation/_o19_/`</li>
+	<li>`The Sims 4/mod_sources/_o19_/`</li>
+</ul>
+<br/>
+<h2>Installation</h2>
+<ul>
+	<li>Locate the localized <i>The Sims 4</i> folder which contains the <i>Mods</i> folder.</li>
+	<li>Extract the ZIP file into this <i>The Sims 4</i> folder.</li>
+	<li>It will create the directories/files <i>Mods/_o19_/$mod_name.ts4script`, <i>Mods/_o19_/$mod_name.package`, <i>mod_data/$mod_name/*</i> and/or <i>mod_documentation/$mod_name/*</i> and/or <i>mod_sources/$mod_name/*`</li>
+	<li>CAS and build-buy UGC without scripts will create <i>Mods/o19/$mod_name.package`.</li>
+	<li>`mod_logs/$mod_name.txt</i> will be created as soon as data is logged.</li>
+	<li>`mod_documentation/$mod_name/</i> and/or <i>mod_sources/$mod_name/</i> are not required and can be deleted.</li>
+</ul>
+<br/>
+<h3>Manual Installation</h3>
+If you don't want to extract the ZIP file into <i>The Sims 4</i> folder you might want to read this.<br/>
+You can extract the ZIP file to a temporary directory and copy the folders manually.<br/>
+<ul>
+	<li>The files in <i>ZIP-File/mod_data</i> are usually required and should be extracted to <i>The Sims 4/mod_data`.</li>
+	<li>The files in <i>ZIP-File/mod_documentation</i> are for you to read it. They are not needed to use this mod.</li>
+	<li>The files in <i>ZIP-File/mod_sources</i> are not needed to use this mod.</li>
+	<li>The <i>Mods/_o19_/*.ts4script</i> files can be stored in a random folder within <i>Mods</i> or directly in <i>Mods</i>. I highly recommend to store it in <i>_o19_</i> so you know who created it.</li>
+</ul>
+<br/>
+<h2>Troubleshooting</h2>
+When installed properly this is not necessary at all.<br/>
+For manual installations check these things and make sure each question can be answered with 'yes'.<br/>
+<ul>
+	<li>Does 'The Sims 4' (localized to Die Sims 4, Les Sims 4, Los Sims 4, The Sims 4, ...) exist?</li>
+	<li>Does <i>The Sims 4</i> contain the folder <i>Mods`?</li>
+	<li>Does <i>Mods</i> contain the folder <i>_o19_`?</li>
+	<li>Does <i>_19_</i> contain <i>ts4lib.ts4script</i> and <i>ts4lib.package</i> files?</li>
+	<li>Does <i>_19_</i> contain <i>{mod_name}.ts4script</i> and/or <i>{mod_name}.package</i> files?</li>
+	<li>Does <i>The Sims 4</i> contain the folder <i>mod_data`?</li>
+	<li>Does <i>mod_data</i> contain the folder <i>{mod_name}`?</li>
+	<li>Does <i>{mod_name}</i> contain files or folders?</li>
+	<li>Does <i>The Sims 4</i> contain the <i>mod_logs</i> ?</li>
+	<li>Does <i>mod_logs</i> contain the file <i>Sims4CommunityLib_*_Messages.txt`?</li>
+	<li>Does <i>mod_logs</i> contain the file <i>TS4-Library_*_Messages.txt`?</li>
+	<li>Is this the most recent version or can it be updated?</li>
+	<li>Does <i>mod_logs</i> contain the file <i>{mod_name}_*_Messages.txt`?</li>
+	<li>Is this the most recent version or can it be updated?</li>
+	<li>Doesn't <i>The Sims 4</i> contain the file(s) <i>last_exception.txt</i>  and/or <i>last_exception*.txt</i> ?</li>
+	<li>Share the <i>The Sims 4/mod_logs/Sims4CommunityLib_*_Messages.txt</i> and <i>The Sims 4/mod_logs/{mod_name}_*_Messages.txt</i>  file.</li>
+</ul>
+<br/>
+<h2>Usage Tracking / Privacy</h2>
+This mod does not send any data to tracking servers. The code is open source, not obfuscated, and can be reviewed.<br/>
+<br/>
+Some log entries in the log file ('mod_logs' folder) may contain the local username, especially if files are not found (WARN, ERROR).<br/>
+<br/>
+<h2>External Links</h2>
+<a href='https://github.com/Oops19/'>Sources</a><br/>
+<a href='https://discord.gg/d8X9aQ3jbm'>Support</a><br/>
+<a href='https://www.patreon.com/o19'>Donations</a><br/>
+<br/>
+<h2>Copyright and License</h2>
+<ul>
+	<li>© 2020-2025 <a href='https://github.com/Oops19'>Oops19</a></li>
+	<li>License for '.package' files: <a href='https://tos.ea.com/legalapp/WEBTERMS/US/en/PC/'>Electronic Arts TOS for UGC</a></li>
+	<li>License for other media unless specified differently: <a href='https://creativecommons.org/licenses/by/4.0/'>CC BY 4.0</a> unless the Electronic Arts TOS for UGC overrides it.</li>
+</ul>
+This allows you to use this mod and re-use the code even if you don't own The Sims 4.<br/>
+Have fun extending this mod and/or integrating it with your mods.<br/>
+<br/>
+Oops19 / o19 is not endorsed by or affiliated with Electronic Arts or its licensors.<br/>
+Game content and materials copyright Electronic Arts Inc. and its licensors.<br/>
+Trademarks are the property of their respective owners.<br/>
+<br/>
+<h3>TOS</h3>
+<ul>
+	<li>Please don't put it behind a paywall.</li>
+	<li>Please don't create mods which break with every TS4 update.</li>
+	<li>For simple tuning modifications use <a href='https://github.com/Oops19/TS4-PatchXML'>Patch-XML</a></li>
+	<li>or <a href='https://github.com/Oops19/TS4-LiveXML'>LiveXML</a>.</li>
+	<li>To check the XML structure of custom tunings use <a href='https://github.com/Oops19/TS4-VanillaLogs'>VanillaLogs</a>.</li>
+</ul>
+<br/>
