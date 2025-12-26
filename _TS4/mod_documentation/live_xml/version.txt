@@ -1,5 +1,5 @@
-LiveXML v1.0.7 for The Sims 4 v1.120.117 and S4CL v3.17
-Created on 2025-12-14
-v1.0.7
-    Tested with TS4 v1.107
+LiveXML v1.0.8 for The Sims 4 v1.120.117 and S4CL v3.17
+Created on 2025-12-18
+v1.0.8
+    Tested with latest TS4 version
 
