@@ -38,6 +38,9 @@ class ModInfo(CommonModInfo):
 
 
 r'''
+TODO
+    Fix add_filter_to_paintings.dict
+    
 v1.0.8
     Tested with latest TS4 version
 v1.0.7
