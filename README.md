@@ -94,6 +94,8 @@ The `mod_data/*.dict` files modify tunings. They change the game mechanics and c
 
 The included files should not affect the game-play too much but it's hard to test everything.
 
+## limitations
+Further limitations: [Patch-XML vs. Live-XML](https://github.com/Oops19/TS4-PatchXML/blob/main/PatchXML_LiveXML_Limitations.md)
 
 ## Cheat commands
 To create a new config file it makes sense to clean up the 'mod_data/live_xml' directory to work only with the new file.
@@ -243,7 +245,7 @@ Also within `<V n="outcome" t="single"><U n="single"><U n="actions"><L n="basic_
 # 📝 Addendum
 
 ## 🔄 Game compatibility
-This mod has been tested with `The Sims 4` 1.120.117, S4CL 3.17, TS4Lib 0.3.42.
+This mod has been tested with `The Sims 4` 1.121.342, S4CL 3.17, TS4Lib 0.3.42.
 It is expected to remain compatible with future releases of TS4, S4CL, and TS4Lib.
 
 ## 📦 Dependencies
